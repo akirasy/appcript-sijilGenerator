@@ -1,4 +1,3 @@
-// Create topbar menu
 function onOpen() {
   SpreadsheetApp.getUi()
   .createMenu('Sijil Generator')
@@ -9,6 +8,8 @@ function onOpen() {
   .addItem('Generate Gdoc File', 'actionGenerateGdoc')
   .addItem('Convert Gdoc to PDF File', 'actionGeneratePdf')
   .addSeparator()
+  .addSeparator()
+  .addItem('Send email to selected candidate', 'actionSendEmail')
   .addSubMenu(SpreadsheetApp.getUi().createMenu('🕊 About')
       .addItem('⚪ Google AppScript', 'aboutGoogleAppScript')
       .addItem('⚪ Author', 'aboutAuthor')
@@ -16,6 +17,9 @@ function onOpen() {
   .addToUi();
 }
 
+/**
+ * Check if user has approve script execution.
+ */
 function aquireGooglePermission() {
   SpreadsheetApp.getUi().alert(
     'Success',
@@ -23,25 +27,9 @@ function aquireGooglePermission() {
     SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
-function getConfigVariable() {
-  let configSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("config.gs");
-  let dataSheet   = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
-  let workingFolderID       = configSheet.getRange("B6").getValue();
-  let templateDocID         = configSheet.getRange("B2").getValue();
-  let generatedFolderGdocID = configSheet.getRange("B7").getValue();
-  let generatedFolderPdfID  = configSheet.getRange("B8").getValue();
-
-  let output = {
-    "dataSheet"           : dataSheet,
-    "configSheet"         : configSheet,
-    "workingFolder"       : DriveApp.getFolderById(workingFolderID),
-    "templateDoc"         : DriveApp.getFileById(templateDocID),
-    "generatedFolderGdoc" : DriveApp.getFolderById(generatedFolderGdocID),
-    "generatedFolderPdf"  : DriveApp.getFolderById(generatedFolderPdfID),
-  }
-  return output
-}
-
+/**
+ * Script to set up empty spreadsheet.
+ */
 function setupSpreadsheet() {
   let ui = SpreadsheetApp.getUi();
   let result = ui.alert(
@@ -67,42 +55,47 @@ function setupSpreadsheet() {
       let configSheet = activeSpreadsheet.insertSheet("config.gs");
 
       // Configure sheet `Data`
+      Logger.log("Preparing new sheet: Data");
       let a1e1A = dataSheet.getRange("A1:E1");
       a1e1A.merge(); a1e1A.setFontWeight("bold"); a1e1A.setHorizontalAlignment("center"); a1e1A.setBackground("#a4c2f4");
       let f1i1A = dataSheet.getRange("F1:I1");
       f1i1A.merge(); f1i1A.setFontWeight("bold"); f1i1A.setHorizontalAlignment("center"); f1i1A.setBackground("#a4c2f4");
-      let a2i2A = dataSheet.getRange("A2:I2");
-      a2i2A.setFontWeight("bold"); a2i2A.setHorizontalAlignment("center"); a2i2A.setBackground("#c9daf8");
-      let a1i2A = dataSheet.getRange("A1:I2");
-      a1i2A.setBorder(true, true, true, true, true, true);
-      a1i2A.protect().setWarningOnly(true);
-      dataSheet.deleteColumns(10, dataSheet.getMaxColumns() - 9);
+      let j1k1A = dataSheet.getRange("J1:K1");
+      j1k1A.merge(); j1k1A.setFontWeight("bold"); j1k1A.setHorizontalAlignment("center"); j1k1A.setBackground("#a4c2f4");
+      let a2k2A = dataSheet.getRange("A2:K2");
+      a2k2A.setFontWeight("bold"); a2k2A.setHorizontalAlignment("center"); a2k2A.setBackground("#c9daf8");
+      let a1k2A = dataSheet.getRange("A1:K2");
+      a1k2A.setBorder(true, true, true, true, true, true);
+      a1k2A.protect().setWarningOnly(true);
+      dataSheet.deleteColumns(12, dataSheet.getMaxColumns() - 11);
       dataSheet.setColumnWidth(1, 300);
       dataSheet.setColumnWidths(2, 4, 150);
 
       // Configure sheet `config.gs`
+      Logger.log("Preparing new sheet: config.gs");
       let a1b1B = configSheet.getRange("A1:B1");
       a1b1B.merge(); a1b1B.setFontWeight("bold"); a1b1B.setHorizontalAlignment("center"); a1b1B.setBackground("#c9daf8");
       a1b1B.setBorder(true, true, true, true, true, true);
       a1b1B.protect().setWarningOnly(true);
-      let a5b5B = configSheet.getRange("A5:B5");
-      a5b5B.merge(); a5b5B.setFontWeight("bold"); a5b5B.setHorizontalAlignment("center"); a5b5B.setBackground("#c9daf8");
-      a5b5B.setBorder(true, true, true, true, true, true);
-      a5b5B.protect().setWarningOnly(true);
-      let a2a3B = configSheet.getRange("A2:A3");
-      a2a3B.setFontWeight("bold");
-      a2a3B.protect().setWarningOnly(true);
-      let a6a8B = configSheet.getRange("A6:A8");
-      a6a8B.setFontWeight("bold");
-      a6a8B.protect().setWarningOnly(true);
-      let b6b8B = configSheet.getRange("B6:B8");
-      b6b8B.protect().setWarningOnly(true);
+      let a6b6B = configSheet.getRange("A6:B6");
+      a6b6B.merge(); a6b6B.setFontWeight("bold"); a6b6B.setHorizontalAlignment("center"); a6b6B.setBackground("#c9daf8");
+      a6b6B.setBorder(true, true, true, true, true, true);
+      a6b6B.protect().setWarningOnly(true);
+      let a2a4B = configSheet.getRange("A2:A4");
+      a2a4B.setFontWeight("bold");
+      a2a4B.protect().setWarningOnly(true);
+      let a7a9B = configSheet.getRange("A7:A9");
+      a7a9B.setFontWeight("bold");
+      a7a9B.protect().setWarningOnly(true);
+      let b7b9B = configSheet.getRange("B7:B9");
+      b7b9B.protect().setWarningOnly(true);
       configSheet.setColumnWidth(1, 200);
       configSheet.setColumnWidth(2, 400);
       configSheet.deleteColumns(3, configSheet.getMaxColumns() - 2);
       configSheet.deleteRows(10, configSheet.getMaxRows() - 9);
 
       // Prepare directory
+      Logger.log("Setting up file directory in parent folder");
       let workingFolder = DriveApp.getFileById(activeSpreadsheet.getId()).getParents().next();
       let generatedFolderGdoc = DriveApp.createFolder("generated-gdoc");
       let generatedFolderPdf = DriveApp.createFolder("generated-pdf");
@@ -110,8 +103,10 @@ function setupSpreadsheet() {
       generatedFolderPdf.moveTo(workingFolder);
 
       // Write header values
+      Logger.log("Editing and formatting sheet: Data");
       dataSheet.getRange("A1").setValue("VARIABLE TAGGING");
       dataSheet.getRange("F1").setValue("OUTPUT LINK");
+      dataSheet.getRange("J1").setValue("EMAIL RECIPIENT");
       dataSheet.getRange("A2").setValue("<<VAR1>>");
       dataSheet.getRange("B2").setValue("<<VAR2>>");
       dataSheet.getRange("C2").setValue("<<VAR3>>");
@@ -121,21 +116,29 @@ function setupSpreadsheet() {
       dataSheet.getRange("G2").setValue("GDOC ID");
       dataSheet.getRange("H2").setValue("PDF URL");
       dataSheet.getRange("I2").setValue("PDF ID");
+      dataSheet.getRange("J2").setValue("EMAIL");
+      dataSheet.getRange("K2").setValue("SENT");
 
+      Logger.log("Editing and formatting sheet: config.gs");
       configSheet.getRange("A1").setValue("USER-DEFINED VALUES");
       configSheet.getRange("A2").setValue("Template file ID");
-      configSheet.getRange("A5").setValue("AUTO-GENERATED VALUES");
-      configSheet.getRange("A6").setValue("Working folder ID");
-      configSheet.getRange("A7").setValue("GoogleDoc folder ID");
-      configSheet.getRange("A8").setValue("PDF folder ID");
-      configSheet.getRange("B6").setValue(workingFolder.getId());
-      configSheet.getRange("B7").setValue(generatedFolderGdoc.getId());
-      configSheet.getRange("B8").setValue(generatedFolderPdf.getId());
+      configSheet.getRange("A3").setValue("Subject for email");
+      configSheet.getRange("A4").setValue("Message for email");
+      
+      configSheet.getRange("A6").setValue("AUTO-GENERATED VALUES");
+      configSheet.getRange("A7").setValue("Working folder ID");
+      configSheet.getRange("A8").setValue("GoogleDoc folder ID");
+      configSheet.getRange("A9").setValue("PDF folder ID");
+      configSheet.getRange("B7").setValue(workingFolder.getId());
+      configSheet.getRange("B8").setValue(generatedFolderGdoc.getId());
+      configSheet.getRange("B9").setValue(generatedFolderPdf.getId());
 
       // Delete sheet1
+      Logger.log("Deleting default sheet1");
       activeSpreadsheet.deleteSheet(sheet1);
 
       // Prompt complete instruction
+      Logger.log("Prompt user to fill in GDoc Template ID");
       ui.alert("Success!", "Please enter your Sijil template in config.gs sheet.", ui.ButtonSet.OK);
     } else {
       ui.alert("Attention!", "This is not an empty spreadsheet.\nPlease create new spreadsheet.\n\nScript will abort.", ui.ButtonSet.OK);
@@ -143,75 +146,144 @@ function setupSpreadsheet() {
   }
 }
 
+/**
+ * Script for onOpen() - generate sijil on selected row
+ */
+function actionGenerateGdoc() {
+  let confVar             = getConfigVariable();
+  let generatedFolderGdoc = confVar.generatedFolderGdoc;
+  let templateDoc         = confVar.templateDoc;
+  let sheet               = confVar.dataSheet;
+  let selectedRange       = sheet.getActiveRange();
+
+  let forloopStart = selectedRange.getRowIndex();
+  let forloopEnd   = forloopStart + selectedRange.getNumRows();
+  for (let rowid = forloopStart; rowid < forloopEnd; rowid++) {
+    let candidateVarTag = sheet.getRange(rowid, 1, 1, 5).getValues()[0];
+    let candidateFile = generateGdocFile(generatedFolderGdoc, templateDoc, candidateVarTag);
+    sheet.getRange(rowid, 6).setValue(candidateFile.getUrl());
+    sheet.getRange(rowid, 7).setValue(candidateFile.getId());
+    Logger.log("Rowid: " + rowid + " - File created: " + candidateVarTag[0]);
+  }
+}
+
+/**
+ * Script for onOpen() - convert sijil from Gdoc to PDF on selected row
+ */
+function actionGeneratePdf() {
+  let confVar       = getConfigVariable();
+  let sheet         = confVar.dataSheet;
+  let targetFolder  = confVar.generatedFolderPdf;
+  let selectedRange = sheet.getActiveRange();
+
+  let forloopStart = selectedRange.getRowIndex();
+  let forloopEnd   = forloopStart + selectedRange.getNumRows();
+  for (let rowid = forloopStart; rowid < forloopEnd; rowid++) {
+    let gdocId       = sheet.getRange(rowid, 7).getValue();
+    let gdocFile     = DriveApp.getFileById(gdocId);
+    let convertedPdf = convertToPdf(gdocFile, targetFolder);
+    sheet.getRange(rowid, 8).setValue(convertedPdf.getUrl());
+    sheet.getRange(rowid, 9).setValue(convertedPdf.getId());
+    Logger.log("File converted for rowid: " + rowid);
+  }
+}
+
+/**
+ * Script for onOpen() - send email with PDF attachment on selected row
+ */
+function actionSendEmail() {
+  let confVar       = getConfigVariable();
+  let sheet         = confVar.dataSheet;
+  let selectedRange = sheet.getActiveRange();
+
+  let forloopStart = selectedRange.getRowIndex();
+  let forloopEnd = forloopStart + selectedRange.getNumRows();
+  for (let rowid = forloopStart; rowid < forloopEnd; rowid++) {
+    let recipientEmail = sheet.getRange(rowid, 10).getValue();
+    let recipientAttachmentId = sheet.getRange(rowid, 9).getValue();
+    sendEmailTo(confVar, recipientEmail, recipientAttachmentId);
+    sheet.getRange(rowid, 11).setValue('DONE');
+    Logger.log('Email sent to: ' + recipientEmail);
+  };
+}
+
+/**
+ * Instantiate global project variable to save execution time.
+ */
+function getConfigVariable() {
+  let configSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("config.gs");
+  let dataSheet   = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Data");
+  let workingFolderID       = configSheet.getRange("B7").getValue();
+  let templateDocID         = configSheet.getRange("B2").getValue();
+  let generatedFolderGdocID = configSheet.getRange("B8").getValue();
+  let generatedFolderPdfID  = configSheet.getRange("B9").getValue();
+  let emailSubject          = configSheet.getRange("B3").getValue();
+  let emailBody             = configSheet.getRange("B4").getValue();
+
+  let output = {
+    "dataSheet"           : dataSheet,
+    "configSheet"         : configSheet,
+    "workingFolder"       : DriveApp.getFolderById(workingFolderID),
+    "templateDoc"         : DriveApp.getFileById(templateDocID),
+    "generatedFolderGdoc" : DriveApp.getFolderById(generatedFolderGdocID),
+    "generatedFolderPdf"  : DriveApp.getFolderById(generatedFolderPdfID),
+    'emailSubject'        : emailSubject,
+    'emailBody'           : emailBody
+  }
+  return output
+}
+
+/**
+ * Generate a single sijil as GoogleDoc object.
+ * @param {Object} generatedFolderGdoc target folder for generated file
+ * @param {Object} templateDoc GoogleDoc template file to copy from 
+ * @param {Array} varTag list of variableTag from activeSpreadsheet
+ */
 function generateGdocFile(generatedFolderGdoc, templateDoc, varTag) {
   let newDocObj = templateDoc.makeCopy(generatedFolderGdoc);
-  let body = DocumentApp.openById(newDocObj.getId()).getBody();
+  let docApp = DocumentApp.openById(newDocObj.getId());
+  let body = docApp.getBody();
   body.replaceText("<<VAR1>>", varTag[0]);
   body.replaceText("<<VAR2>>", varTag[1]);
   body.replaceText("<<VAR3>>", varTag[2]);
   body.replaceText("<<VAR4>>", varTag[3]);
   body.replaceText("<<VAR5>>", varTag[4]);
+  docApp.getFooter().replaceText("<<HASHID>>", newDocObj.getId());
   newDocObj.setName(varTag[0]);
   return newDocObj
 }
 
-function convertToPdf(gdocFile, targetFolderID) {
+/**
+ * Convert GoogleDoc object file into PDF.
+ * @param {Object} gdocFile GoogleDoc file to convert
+ * @param {Object} targetFolder target folder for generated file
+ */
+function convertToPdf(gdocFile, targetFolder) {
   let docBlob = gdocFile.getAs('application/pdf');
   docBlob.setName(gdocFile.getName() + ".pdf");
-  let convertedPdf = DriveApp.createFile(docBlob).moveTo(targetFolderID);
+  let convertedPdf = DriveApp.createFile(docBlob).moveTo(targetFolder);
   return convertedPdf
 }
 
-function actionGenerateGdoc() {
-  let confVar = getConfigVariable();
-
-  let generatedFolderGdoc = confVar.generatedFolderGdoc;
-  let templateDoc = confVar.templateDoc;
-  let sheet = confVar.dataSheet;
-
-  // generate and collect info
-  let candidateArray = new Array(); // [index, url, fileID]
-  let workingRangeValues = sheet.getRange(3, 1, sheet.getLastRow() - 2, 8).getValues();
-  workingRangeValues.map((item, index) => {
-    if (item[5] == "") {
-      let candidateFile = generateGdocFile(generatedFolderGdoc, templateDoc, item);
-      let candidateIndex = index + 3;
-      candidateArray.push([candidateIndex, candidateFile.getUrl(), candidateFile.getId()]);
-      Logger.log("File created: " + item[0]);
-    }
-  })
-
-  // write url to cell
-  candidateArray.forEach(item => {
-    sheet.getRange(item[0], 6).setValue(item[1]);
-    sheet.getRange(item[0], 7).setValue(item[2]);
-  })
+/**
+ * Send email with sijil attachment.
+ * @param {Object} confVar instance of getConfigVariable()
+ * @param {string} recipientEmail
+ * @param {string} fileAttachmentId
+ */
+function sendEmailTo(confVar, recipientEmail, fileAttachmentId) {
+  let fileBlob     = DriveApp.getFileById(fileAttachmentId).getBlob();
+  MailApp.sendEmail({
+    to          : recipientEmail,
+    subject     : confVar.emailSubject,
+    body        : confVar.emailBody,
+    attachments : [fileBlob]
+  });
 }
 
-function actionGeneratePdf() {
-  let confVar = getConfigVariable();
-  let targetFolder = confVar.generatedFolderPdf;
-  let sheet = confVar.dataSheet;
-
-  let candidateArray = new Array(); // [index, url, fileID]
-  let workingRangeValues = sheet.getRange(3, 1, sheet.getLastRow() - 2, 8).getValues();
-  workingRangeValues.map((item, index) => {
-    if (item[7] == "") {
-      let gdocFile = DriveApp.getFileById(item[6]);
-      let candidateIndex = index + 3;
-      let convertedPdf = convertToPdf(gdocFile, targetFolder);
-      candidateArray.push([candidateIndex, convertedPdf.getUrl(), convertedPdf.getId()])
-      Logger.log("File converted: " + gdocFile.getName());
-    }
-  })
-
-  // write url to cell
-  candidateArray.forEach(item => {
-    sheet.getRange(item[0], 8).setValue(item[1]);
-    sheet.getRange(item[0], 9).setValue(item[2]);
-  })
-}
-
+/**
+ * Prompt user about license.
+ */
 function aboutLicense() {
   let title = 'Open Source';
   let subtitle = `
@@ -232,6 +304,9 @@ function aboutLicense() {
   SpreadsheetApp.getUi().alert(title, subtitle, SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
+/**
+ * Prompt user about author.
+ */
 function aboutAuthor() {
   let title = 'AppScript Author';
   let subtitle = `
@@ -243,6 +318,9 @@ function aboutAuthor() {
   SpreadsheetApp.getUi().alert(title, subtitle, SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
+/**
+ * Prompt user about GoogleAppScript.
+ */
 function aboutGoogleAppScript() {
   let title = 'Google AppScript';
   let subtitle = `

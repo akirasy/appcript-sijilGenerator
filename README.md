@@ -37,9 +37,13 @@ Just provide your own template or use our template available here.
 1. This generator accepts up to 5 parameter. Please use `<<VAR1>>` to `<<VAR5>>` inside your
 `sijil template` to replace it with your parameter (eg. name, id, date).
 1. Prepare your candidate data at sheet `Data`.
-1. Click `Generate Gdoc File` and let the script runs.
-1. If you want it in PDF format, click `Convert Gdoc to PDF File`.
+1. Select multiple row to generate sijil. Then click `Generate Gdoc File` and let the script runs.
+1. If you want it in PDF format, select multiple row to convert to PDF. Then, click `Convert Gdoc to PDF File`.
 1. Enjoy!!
+
+### 4. Email to recipient
+
+1. Same as above. Fill in candidate email. Select multiple row and click `Send email to selected candidate`
 
 ## Sijil Template
 
