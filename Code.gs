@@ -248,7 +248,9 @@ function generateGdocFile(generatedFolderGdoc, templateDoc, varTag) {
   body.replaceText("<<VAR3>>", varTag[2]);
   body.replaceText("<<VAR4>>", varTag[3]);
   body.replaceText("<<VAR5>>", varTag[4]);
-  docApp.getFooter().replaceText("<<HASHID>>", newDocObj.getId());
+  if ( body.findText("<<HASHID>>") ) {
+    body.replaceText("<<HASHID>>", newDocObj.getId());
+  }
   newDocObj.setName(varTag[0]);
   return newDocObj
 }
@@ -289,7 +291,7 @@ function aboutLicense() {
   let subtitle = `
     This app is open source and free to use under the terms of GNU General Public License v3.0.
 
-    Copyright (C) 2021  akirasy
+    Copyright (C) 2023  akirasy
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
