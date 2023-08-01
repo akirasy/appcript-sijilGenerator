@@ -8,7 +8,6 @@ function onOpen() {
   .addItem('Generate Gdoc File', 'actionGenerateGdoc')
   .addItem('Convert Gdoc to PDF File', 'actionGeneratePdf')
   .addSeparator()
-  .addSeparator()
   .addItem('Send email to selected candidate', 'actionSendEmail')
   .addSubMenu(SpreadsheetApp.getUi().createMenu('🕊 About')
       .addItem('⚪ Google AppScript', 'aboutGoogleAppScript')
