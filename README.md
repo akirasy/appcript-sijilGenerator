@@ -34,8 +34,9 @@ Just provide your own template or use our template available here.
 
 ### 3. Use the generator
 
-1. This generator accepts up to 5 parameter. Please use `<<VAR1>>` to `<<VAR5>>` inside your
-`sijil template` to replace it with your parameter (eg. name, id, date).
+1. This generator accepts unlimited parameters. Just add more columns to the right and fill it with `<<TAGS>>`. You may use any name for the tags.
+1. `<<VAR1>>` to `<<VAR9>>` is set by default. You may want to replace it with your parameter (eg. name, id, date).
+1. You might need to delete those extra tags if it is not used. Just delete those columns.
 1. Prepare your candidate data at sheet `Data`.
 1. Select multiple row to generate sijil. Then click `Generate Gdoc File` and let the script runs.
 1. If you want it in PDF format, select multiple row to convert to PDF. Then, click `Convert Gdoc to PDF File`.
@@ -43,13 +44,8 @@ Just provide your own template or use our template available here.
 
 ### 4. Email to recipient
 
-1. Same as above. Fill in candidate email. Select multiple row and click `Send email to selected candidate`
-
-## Sijil Template
-
-This is our template. Feel free to use and copy it to your folder.
-1. [Hari Kemerdekaan](https://docs.google.com/document/d/1m-ehl05mF9zTI_EDGkkCUDnA-9xEZiVHgBhQ2i85KQ8/)
-1. [Hari Tanpa Tembakau](https://docs.google.com/document/d/1Sc2qg3a0Yq533EyxR0f7ULTMD_8oWJWNEclYAgFBP4A/)
+1. Same as above. Fill in candidate email.
+1. Select multiple row and click `Send email to selected candidate`.
 
 ## License
 
