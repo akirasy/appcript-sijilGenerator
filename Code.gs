@@ -341,6 +341,21 @@ function toUpperCase() {
 }
 
 /**
+ * Check if arg is Date and return it human readable date.
+ * @param {Any} arg Variable to check
+ */
+function parseDate(arg) {
+  let output;
+  if (arg instanceof Date) {
+    let argInput = new Date(arg);
+    output = argInput.getDate() + '/' + (argInput.getMonth() + 1) + '/' + argInput.getFullYear();
+  } else {
+    output = arg
+  };
+  return output;
+}
+
+/**
  * Prompt user about license.
  */
 function aboutLicense() {
