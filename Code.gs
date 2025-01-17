@@ -289,7 +289,7 @@ function generateGdocFile(generatedFolderGdoc, templateDoc, candidateData) {
   let docApp = DocumentApp.openById(newDocObj.getId());
   let body = docApp.getBody();
   candidateData.forEach(item => {
-    body.replaceText(item.varTag.toString(), item.varTagValue.toString());
+    body.replaceText(item.varTag.toString(), parseDate(item.varTagValue).toString());
   });
   newDocObj.setName(candidateData[0].varTagValue.toString());
   return newDocObj
