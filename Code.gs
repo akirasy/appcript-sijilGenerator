@@ -334,6 +334,7 @@ function toUpperCase() {
       let value = dataList[i][j];
       if (!(value instanceof Date)) {
         value = value.toString().toUpperCase();
+        dataList[i][j] = value;
       };
     };
   };
